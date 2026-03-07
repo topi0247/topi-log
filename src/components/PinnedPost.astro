@@ -1,0 +1,55 @@
+---
+import type { getPinnedPost } from '@/lib/blog';
+import FormattedDate from '@/components/FormattedDate.astro';
+
+interface Props {
+	post: NonNullable<Awaited<ReturnType<typeof getPinnedPost>>>;
+}
+
+const { post } = Astro.props;
+
+// 本文冒頭を抽出（Markdownの記号を除去して約100文字）
+const excerpt = (post.body ?? '')
+	.replace(/^---[\s\S]*?---/, '')   // frontmatter除去
+	.replace(/#+\s+/g, '')            // 見出し記号
+	.replace(/[*_`>\-]/g, '')         // 装飾記号
+	.replace(/\n+/g, ' ')             // 改行をスペースに
+	.trim()
+	.slice(0, 100);
+---
+
+<div class="mt-6">
+	<div class="bg-white shadow-md p-5">
+		<p class="text-xs font-medium text-gray-400 tracking-widest mb-2">📌 ピン留め</p>
+		<p class="text-xs text-gray-400 mb-1"><FormattedDate date={post.data.pubDate} /></p>
+		<a href={`/articles/${post.id}`} class="post-title-link block text-base font-medium text-gray-800 hover:text-sky-600 transition-colors no-underline mb-2">{post.data.title}</a>
+		<p class="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">{excerpt}…</p>
+		<div class="text-right">
+			<a href={`/articles/${post.id}`} class="text-xs text-sky-500 hover:text-sky-700 no-underline transition-colors">
+				記事を見る →
+			</a>
+		</div>
+	</div>
+</div>
+
+<style>
+	.post-title-link {
+		position: relative;
+		padding-bottom: 2px;
+	}
+
+	.post-title-link::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 1px;
+		background-color: #38bdf8;
+		transition: width 0.25s ease;
+	}
+
+	.post-title-link:hover::after {
+		width: 100%;
+	}
+</style>

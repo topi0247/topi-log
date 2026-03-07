@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LatestPosts from '@/components/LatestPosts.astro';
+import Pagination from '@/components/Pagination.astro';
+import { SITE_TITLE } from '@/consts';
+import { getBlogPosts } from '@/lib/blog';
+
+const PAGE_SIZE = 10;
+const allPosts = await getBlogPosts();
+const posts = allPosts.slice(0, PAGE_SIZE);
+const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+---
+
+<BaseLayout title={`Articles | ${SITE_TITLE}`} description="記事一覧">
+	<LatestPosts posts={posts} showHeading={false} />
+	<Pagination currentPage={1} totalPages={totalPages} />
+</BaseLayout>

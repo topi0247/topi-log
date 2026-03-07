@@ -1,86 +1,122 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { SITE_TITLE } from '@/consts';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	pubDate: Date;
+	headings: MarkdownHeading[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, pubDate, tags, headings } = Astro.props;
+
+const tocHeadings = headings.filter((h) => h.depth <= 3);
 ---
 
-<html lang="ja">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<BaseLayout title={`${title} | ${SITE_TITLE}`} description={title}>
+	<article>
+		<!-- 記事ヘッダー -->
+		<div class="bg-white shadow-md p-6 mb-6">
+			<h1 class="text-xl font-bold text-gray-800 mb-3 leading-snug">{title}</h1>
+			<p class="text-xs text-gray-400 mb-3"><FormattedDate date={pubDate} /></p>
+			{tags && tags.length > 0 && (
+				<div class="flex flex-wrap gap-2">
+					{tags.map((tag) => (
+						<span class="text-xs bg-sky-50 text-sky-500 px-2 py-0.5 rounded-full">{tag}</span>
+					))}
+				</div>
+			)}
+		</div>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+		<!-- 目次 -->
+		{tocHeadings.length > 0 && (
+			<div class="bg-white shadow-md mb-6">
+				<button id="toc-toggle" class="w-full px-5 py-3 text-xs font-medium text-gray-400 tracking-widest cursor-pointer flex items-center justify-between bg-transparent border-0">
+					目次
+					<span id="toc-chevron" class="text-gray-300 text-xs">▲</span>
+				</button>
+				<ol id="toc-list" class="flex flex-col gap-1.5 px-5 pb-4">
+					{tocHeadings.map((h) => (
+						<li style={`padding-left: ${(h.depth - 1) * 12}px`}>
+							<a href={`#${h.slug}`} class="text-sm text-sky-500 hover:text-sky-700 no-underline transition-colors">
+								{h.text}
+							</a>
+						</li>
+					))}
+				</ol>
+			</div>
+		)}
+
+		<!-- 本文 -->
+		<div class="bg-white shadow-md p-6 mb-6 article-body">
+			<slot />
+		</div>
+
+		<!-- シェア -->
+		<div class="bg-white shadow-md p-5 mb-6">
+			<p class="text-xs font-medium text-gray-400 tracking-widest mb-3">シェア</p>
+			<div class="flex gap-3">
+				<a
+					id="share-x"
+					href="#"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="flex items-center gap-1.5 px-4 py-2 bg-black text-white text-xs rounded-full no-underline hover:opacity-80 transition-opacity"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+					</svg>
+					ポストする
+				</a>
+				<button
+					id="copy-url"
+					class="flex items-center gap-1.5 px-4 py-2 bg-sky-100 text-sky-600 text-xs rounded-full hover:bg-sky-200 transition-colors border-0 cursor-pointer"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+					</svg>
+					<span id="copy-label">URLをコピー</span>
+				</button>
+			</div>
+		</div>
+
+		<!-- 記事下部 -->
+		<div class="text-left">
+			<a href="/articles" class="text-sm text-sky-500 hover:text-sky-700 no-underline transition-colors">← 記事一覧へ戻る</a>
+		</div>
+	</article>
+<script define:vars={{ articleTitle: title }}>
+	// X シェアリンク
+	const shareX = document.getElementById('share-x');
+	if (shareX) {
+		const pageUrl = window.location.href;
+		const text = encodeURIComponent(`${articleTitle}\n#topilog\n${pageUrl}`);
+		shareX.setAttribute('href', `https://twitter.com/intent/tweet?text=${text}`);
+	}
+
+	// URLコピー
+	const copyBtn = document.getElementById('copy-url');
+	const copyLabel = document.getElementById('copy-label');
+	copyBtn?.addEventListener('click', async () => {
+		await navigator.clipboard.writeText(window.location.href);
+		if (copyLabel) {
+			copyLabel.textContent = 'コピーしました！';
+			setTimeout(() => { copyLabel.textContent = 'URLをコピー'; }, 2000);
+		}
+	});
+
+	// 目次
+	const toggle = document.getElementById('toc-toggle');
+	const list = document.getElementById('toc-list');
+	const chevron = document.getElementById('toc-chevron');
+
+	toggle?.addEventListener('click', () => {
+		const isOpen = list?.style.display !== 'none';
+		if (list) list.style.display = isOpen ? 'none' : 'flex';
+		if (chevron) chevron.textContent = isOpen ? '▼' : '▲';
+	});
+</script>
+</BaseLayout>

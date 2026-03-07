@@ -1,63 +1,181 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { SITE_TITLE } from '@/consts';
+import icon from '@/assets/icon01.png';
+
+import iconJS from '@/assets/skills/js.svg?raw';
+import iconTS from '@/assets/skills/ts.svg?raw';
+import iconRuby from '@/assets/skills/ruby.svg?raw';
+import iconGo from '@/assets/skills/go.svg?raw';
+import iconRails from '@/assets/skills/rails.svg?raw';
+import iconReact from '@/assets/skills/react.svg?raw';
+import iconGraphQL from '@/assets/skills/graphql.svg?raw';
+import iconDocker from '@/assets/skills/docker.svg?raw';
+import iconAWS from '@/assets/skills/aws.svg?raw';
+import iconPostgres from '@/assets/skills/postgres.svg?raw';
+import iconGitHub from '@/assets/skills/github.svg?raw';
+import iconGitHubActions from '@/assets/skills/githubactions.svg?raw';
+import iconCircleCI from '@/assets/skills/circleci.svg?raw';
+import iconTwitter from '@/assets/skills/twitter.svg?raw';
+import iconHatenablog from '@/assets/skills/hatenablog-logo.svg?raw';
+import iconNote from '@/assets/skills/note.svg?raw';
+import iconQiita from '@/assets/skills/qiita.svg?raw';
+import iconZenn from '@/assets/skills/zenn.svg?raw';
+
+const skills: { label: string; items: { name: string; icon?: string }[] }[] = [
+	{
+		label: 'プログラミング言語',
+		items: [
+			{ name: 'JavaScript', icon: iconJS },
+			{ name: 'TypeScript', icon: iconTS },
+			{ name: 'Ruby', icon: iconRuby },
+			{ name: 'Golang', icon: iconGo },
+		],
+	},
+	{
+		label: 'フレームワークなど',
+		items: [
+			{ name: 'Ruby on Rails', icon: iconRails },
+			{ name: 'React', icon: iconReact },
+{ name: 'GraphQL', icon: iconGraphQL },
+		],
+	},
+	{
+		label: 'DevOps',
+		items: [
+			{ name: 'Docker', icon: iconDocker },
+			{ name: 'AWS', icon: iconAWS },
+			{ name: 'PostgreSQL', icon: iconPostgres },
+			{ name: 'GitHub', icon: iconGitHub },
+			{ name: 'GitHub Actions', icon: iconGitHubActions },
+			{ name: 'CircleCI', icon: iconCircleCI },
+		],
+	},
+	{
+		label: 'その他',
+		items: [
+			{ name: 'Twitter', icon: iconTwitter },
+			{ name: 'note', icon: iconNote },
+			{ name: 'Qiita', icon: iconQiita },
+			{ name: 'Zenn', icon: iconZenn },
+			{ name: 'はてなブログ', icon: iconHatenablog },
+		],
+	},
+];
+
+const services = [
+	{
+		name: '言の葉つむぎ',
+		url: 'https://kotonoha-tsumugi.vercel.app',
+		description: '起承転結のリレー小説アプリ',
+	},
+	{
+		name: '言の葉つづり',
+		url: 'https://kotonoha-tsuduri.vercel.app',
+		description: '手紙を使ったリレー小説アプリ',
+	},
+	{
+		name: 'Lead Record ～大草原不可避～',
+		url: 'https://leaf-record.vercel.app',
+		description: 'メモ帳感覚で使えるGitHub草生やしアプリ',
+	},
+];
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage={AboutHeroImage}
->
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+<BaseLayout title={`About | ${SITE_TITLE}`} description="プロフィール">
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+	<!-- プロフィール -->
+	<div class="bg-white shadow-md p-6 mb-6">
+		<div class="flex items-center gap-4 mb-4">
+			<Image
+				src={icon}
+				alt="プロフィールアイコン"
+				width={80}
+				height={80}
+				class="rounded-full border border-sky-100 shrink-0"
+			/>
+			<div>
+				<p class="text-xs text-gray-400 mb-1">全ての過去は未来のための準備</p>
+				<p class="text-sm text-gray-700">ノリと勢いとパッション！！！ぬおおおおおおおお！！！！！</p>
+			</div>
+		</div>
+		<div class="flex gap-4">
+			<a href="https://x.com/topi_log" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-sky-500 transition-colors" aria-label="X">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+					<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+				</svg>
+			</a>
+			<a href="https://github.com/topi0247" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-sky-500 transition-colors" aria-label="GitHub">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+					<path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+				</svg>
+			</a>
+			<a href="https://zenn.dev/topi_log" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-sky-500 transition-colors" aria-label="Zenn">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+					<path d="M.264 23.771h4.984c.264 0 .498-.147.645-.352L19.614.874c.176-.293-.029-.645-.381-.645h-4.72c-.235 0-.44.117-.557.323L.03 23.361c-.088.176.029.41.234.41zM19.4 23.449l4.34-7.46c.176-.323-.029-.733-.41-.733h-4.195c-.176 0-.352.088-.44.235l-4.457 7.343c-.205.323.029.733.44.733h4.311c.176 0 .323-.088.41-.118z"/>
+				</svg>
+			</a>
+		</div>
+	</div>
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+	<!-- 職業・会社 -->
+	<div class="bg-white shadow-md p-6 mb-6">
+		<p class="text-xs font-medium text-gray-400 tracking-widest mb-4">職業・会社</p>
+		<div class="flex flex-col gap-2">
+			<div class="flex items-center gap-3">
+				<span class="text-xs bg-sky-50 text-sky-500 px-2 py-0.5 rounded-full shrink-0">職業</span>
+				<span class="text-sm text-gray-700">バックエンドエンジニア</span>
+			</div>
+			<div class="flex items-start gap-3">
+				<span class="text-xs bg-sky-50 text-sky-500 px-2 py-0.5 rounded-full shrink-0">会社</span>
+				<div class="flex flex-col gap-1">
+					<span class="text-sm text-gray-700">株式会社PREVENT</span>
+					<span class="text-sm text-gray-700">RUNTEQ 非常勤講師（業務委託）</span>
+				</div>
+			</div>
+		</div>
+	</div>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+	<!-- スキル -->
+	<div class="bg-white shadow-md p-6 mb-6">
+		<p class="text-xs font-medium text-gray-400 tracking-widest mb-4">スキル</p>
+		<div class="flex flex-col gap-4">
+			{skills.map((group) => (
+				<div>
+					<p class="text-sm text-gray-500 font-medium mb-2">{group.label}</p>
+					<div class="flex flex-wrap gap-2">
+						{group.items.map((item) => (
+							<span class="flex items-center gap-1.5 text-xs text-gray-600" title={item.name}>
+								{item.icon ? (
+									<span class="w-6 h-6 shrink-0 [&>svg]:w-6 [&>svg]:h-6" set:html={item.icon} />
+								) : (
+									item.name
+								)}
+							</span>
+						))}
+					</div>
+				</div>
+			))}
+		</div>
+	</div>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
-</Layout>
+	<!-- 公開中のサービス -->
+	<div class="bg-white shadow-md p-6 mb-6">
+		<p class="text-xs font-medium text-gray-400 tracking-widest mb-4">公開中のサービス</p>
+		<div class="flex flex-col gap-3">
+			{services.map((service) => (
+				<a
+					href={service.url}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="block border border-sky-100 p-4 hover:border-sky-300 hover:shadow transition-all no-underline group"
+				>
+					<p class="text-sm font-medium text-gray-800 group-hover:text-sky-600 transition-colors mb-1">{service.name}</p>
+					<p class="text-xs text-gray-400">{service.description}</p>
+				</a>
+			))}
+		</div>
+	</div>
+
+</BaseLayout>

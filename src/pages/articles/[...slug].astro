@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '@/layouts/BlogPost.astro';
+import { getBlogPosts } from '@/lib/blog';
+
+export async function getStaticPaths() {
+	const posts = await getBlogPosts();
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { enriched: post },
+	}));
+}
+
+const { enriched } = Astro.props;
+const collection = await getCollection('blog');
+const original = collection.find((p) => p.id === enriched.id)!;
+const { Content, headings } = await render(original);
+---
+
+<BlogPost
+	title={enriched.data.title}
+	pubDate={enriched.data.pubDate}
+	tags={enriched.data.tags}
+	updatedDate={enriched.data.updatedDate}
+	headings={headings}
+>
+	<Content />
+</BlogPost>
