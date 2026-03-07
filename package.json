@@ -20,6 +20,7 @@
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
-    "oxlint": "^1.51.0"
+    "oxlint": "^1.51.0",
+    "ttf2woff2": "^8.0.1"
   }
 }
