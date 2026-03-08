@@ -17,4 +17,11 @@ const { posts, showHeading = true } = Astro.props;
 			<PostCard post={post} />
 		))}
 	</div>
+	{showHeading && (
+		<div class="text-center mt-4">
+			<a href="/articles" class="text-sm text-sky-500 hover:text-sky-700 no-underline transition-colors">
+				もっと見る →
+			</a>
+		</div>
+	)}
 </div>
