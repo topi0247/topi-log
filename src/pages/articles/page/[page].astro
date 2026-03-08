@@ -1,32 +1,6 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import LatestPosts from '@/components/LatestPosts.astro';
-import Pagination from '@/components/Pagination.astro';
-import { SITE_TITLE } from '@/consts';
-import { getBlogPosts } from '@/lib/blog';
-
+// ページネーションは廃止。/articles でフィルター・ソートに統合。
 export async function getStaticPaths() {
-	const PAGE_SIZE = 10;
-	const allPosts = await getBlogPosts();
-	const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
-
-	return Array.from({ length: totalPages - 1 }, (_, i) => {
-		const page = i + 2;
-		return {
-			params: { page: String(page) },
-			props: {
-				posts: allPosts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-				currentPage: page,
-				totalPages,
-			},
-		};
-	});
+	return [];
 }
-
-const { posts, currentPage, totalPages } = Astro.props;
 ---
-
-<BaseLayout title={`Articles p.${currentPage} | ${SITE_TITLE}`} description="記事一覧">
-	<LatestPosts posts={posts} showHeading={false} />
-	<Pagination currentPage={currentPage} totalPages={totalPages} />
-</BaseLayout>

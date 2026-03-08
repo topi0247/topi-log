@@ -1,0 +1,76 @@
+---
+import type { UnifiedPost } from '@/lib/blog';
+import FormattedDate from '@/components/FormattedDate.astro';
+
+interface Props {
+	post: UnifiedPost;
+}
+
+const { post } = Astro.props;
+
+const SOURCE_LABEL: Record<string, string> = {
+	internal: 'topi-log',
+	zenn: 'Zenn',
+	hatenablog: 'はてブロ',
+	note: 'note',
+};
+
+const SOURCE_COLOR: Record<string, string> = {
+	internal: 'bg-sky-50 text-sky-500',
+	zenn: 'bg-blue-50 text-blue-500',
+	hatenablog: 'bg-red-50 text-red-500',
+	note: 'bg-emerald-50 text-emerald-500',
+};
+
+const isExternal = post.type !== 'internal';
+---
+
+<div class="bg-white shadow-md p-5">
+	<div class="flex items-center justify-between mb-1">
+		<p class="text-xs text-gray-400"><FormattedDate date={post.pubDate} /></p>
+		<span class={`text-xs px-2 py-0.5 rounded-full ${SOURCE_COLOR[post.type]}`}>
+			{SOURCE_LABEL[post.type]}
+		</span>
+	</div>
+	<a
+		href={post.url}
+		class="post-title-link block text-base font-medium text-gray-800 hover:text-sky-600 transition-colors no-underline mb-2"
+		{...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+	>
+		{post.title}
+	</a>
+	{post.excerpt && (
+		<p class="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">{post.excerpt}…</p>
+	)}
+	<div class="text-right">
+		<a
+			href={post.url}
+			class="text-xs text-sky-500 hover:text-sky-700 no-underline transition-colors"
+			{...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+		>
+			記事を見る →
+		</a>
+	</div>
+</div>
+
+<style>
+	.post-title-link {
+		position: relative;
+		padding-bottom: 2px;
+	}
+
+	.post-title-link::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 1px;
+		background-color: #38bdf8;
+		transition: width 0.25s ease;
+	}
+
+	.post-title-link:hover::after {
+		width: 100%;
+	}
+</style>

@@ -1,61 +1,20 @@
 ---
-import type { getBlogPosts } from '@/lib/blog';
-import FormattedDate from '@/components/FormattedDate.astro';
+import type { UnifiedPost } from '@/lib/blog';
+import PostCard from '@/components/PostCard.astro';
 
 interface Props {
-	posts: Awaited<ReturnType<typeof getBlogPosts>>;
+	posts: UnifiedPost[];
 	showHeading?: boolean;
 }
 
 const { posts, showHeading = true } = Astro.props;
-
-function getExcerpt(body: string) {
-	return (body ?? '')
-		.replace(/^---[\s\S]*?---/, '')
-		.replace(/#+\s+/g, '')
-		.replace(/[*_`>\-]/g, '')
-		.replace(/\n+/g, ' ')
-		.trim()
-		.slice(0, 100);
-}
 ---
 
 <div class="mt-6">
 	{showHeading && <h2 class="text-xs font-medium text-gray-400 tracking-widest mb-2">最新の記事</h2>}
 	<div class="flex flex-col gap-3">
 		{posts.map((post) => (
-			<div class="bg-white shadow-md p-5">
-				<p class="text-xs text-gray-400 mb-1"><FormattedDate date={post.data.pubDate} /></p>
-				<a href={`/articles/${post.id}`} class="post-title-link block text-base font-medium text-gray-800 hover:text-sky-600 transition-colors no-underline mb-2">{post.data.title}</a>
-				<p class="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">{getExcerpt(post.body ?? '')}…</p>
-				<div class="text-right">
-					<a href={`/articles/${post.id}`} class="text-xs text-sky-500 hover:text-sky-700 no-underline transition-colors">
-						記事を見る →
-					</a>
-				</div>
-			</div>
+			<PostCard post={post} />
 		))}
 	</div>
 </div>
-
-<style>
-	.post-title-link {
-		position: relative;
-		padding-bottom: 2px;
-	}
-
-	.post-title-link::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 0;
-		height: 1px;
-		background-color: #38bdf8;
-		transition: width 0.25s ease;
-	}
-
-	.post-title-link:hover::after {
-		width: 100%;
-	}
-</style>

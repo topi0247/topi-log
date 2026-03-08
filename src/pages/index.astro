@@ -4,10 +4,10 @@ import Profile from '@/components/Profile.astro';
 import PinnedPost from '@/components/PinnedPost.astro';
 import LatestPosts from '@/components/LatestPosts.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
-import { getPinnedPost, getBlogPosts } from '@/lib/blog';
+import { getPinnedPost, getAllPosts } from '@/lib/blog';
 
 const pinnedPost = await getPinnedPost();
-const latestPosts = (await getBlogPosts()).slice(0, 3);
+const latestPosts = (await getAllPosts()).slice(0, 3);
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>

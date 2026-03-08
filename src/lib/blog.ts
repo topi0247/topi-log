@@ -1,4 +1,16 @@
 import { getCollection } from 'astro:content';
+import { getExternalPosts } from '@/lib/externalPosts';
+
+export type UnifiedPost = {
+	type: 'internal' | 'zenn' | 'hatenablog' | 'note';
+	title: string;
+	pubDate: Date;
+	excerpt: string;
+	url: string;
+	// internal only
+	id?: string;
+	tags?: string[];
+};
 
 /**
  * ファイル名（yyyymmddhh または yyyymmdd）から公開日時を生成する
@@ -8,6 +20,16 @@ function parsePubDateFromId(id: string): Date {
 	if (!match) throw new Error(`ブログファイル名が不正です: ${id}`);
 	const [, yyyy, mm, dd, hh = '00'] = match;
 	return new Date(`${yyyy}-${mm}-${dd}T${hh}:00:00`);
+}
+
+function getExcerpt(body: string): string {
+	return (body ?? '')
+		.replace(/^---[\s\S]*?---/, '')
+		.replace(/#+\s+/g, '')
+		.replace(/[*_`>\-]/g, '')
+		.replace(/\n+/g, ' ')
+		.trim()
+		.slice(0, 100);
 }
 
 /**
@@ -32,4 +54,36 @@ export async function getBlogPosts() {
 export async function getPinnedPost() {
 	const posts = await getBlogPosts();
 	return posts.find((post) => post.data.pinned === true) ?? null;
+}
+
+/**
+ * 内部記事＋外部記事をマージして日付降順で返す
+ */
+export async function getAllPosts(): Promise<UnifiedPost[]> {
+	const [internalPosts, externalPosts] = await Promise.all([
+		getBlogPosts(),
+		getExternalPosts(),
+	]);
+
+	const internal: UnifiedPost[] = internalPosts.map((post) => ({
+		type: 'internal',
+		title: post.data.title,
+		pubDate: post.data.pubDate,
+		excerpt: getExcerpt(post.body ?? ''),
+		url: `/articles/${post.id}`,
+		id: post.id,
+		tags: post.data.tags,
+	}));
+
+	const external: UnifiedPost[] = externalPosts.map((p) => ({
+		type: p.type,
+		title: p.title,
+		pubDate: p.pubDate,
+		excerpt: p.excerpt,
+		url: p.url,
+	}));
+
+	return [...internal, ...external].sort(
+		(a, b) => b.pubDate.valueOf() - a.pubDate.valueOf()
+	);
 }

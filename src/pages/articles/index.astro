@@ -1,17 +1,121 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import LatestPosts from '@/components/LatestPosts.astro';
-import Pagination from '@/components/Pagination.astro';
+import PostCard from '@/components/PostCard.astro';
 import { SITE_TITLE } from '@/consts';
-import { getBlogPosts } from '@/lib/blog';
+import { getAllPosts } from '@/lib/blog';
 
-const PAGE_SIZE = 10;
-const allPosts = await getBlogPosts();
-const posts = allPosts.slice(0, PAGE_SIZE);
-const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+const allPosts = await getAllPosts();
+
+const filters = [
+	{ label: 'すべて', value: 'all' },
+	{ label: 'topi-log', value: 'internal' },
+	{ label: 'Zenn', value: 'zenn' },
+	{ label: 'はてブロ', value: 'hatenablog' },
+	{ label: 'note', value: 'note' },
+];
+
+const sorts = [
+	{ label: '新しい順', value: 'newest' },
+	{ label: '古い順', value: 'oldest' },
+];
+
+const btnBase = 'text-xs px-3 py-1 rounded-full border transition-colors cursor-pointer';
+const btnDefault = 'border-sky-200 text-gray-500 hover:border-sky-400 hover:text-sky-600';
+const btnActive = 'bg-sky-100 border-sky-400 text-sky-600';
 ---
 
 <BaseLayout title={`Articles | ${SITE_TITLE}`} description="記事一覧">
-	<LatestPosts posts={posts} showHeading={false} />
-	<Pagination currentPage={1} totalPages={totalPages} />
+	<!-- フィルター・ソートバー -->
+	<div class="flex flex-wrap items-center gap-2 mb-4">
+		<div class="flex flex-wrap gap-1.5" id="filter-buttons">
+			{filters.map(({ label, value }) => (
+				<button
+					class={`${btnBase} ${value === 'all' ? btnActive : btnDefault}`}
+					data-filter={value}
+				>
+					{label}
+				</button>
+			))}
+		</div>
+		<div class="flex gap-1.5 ml-auto" id="sort-buttons">
+			{sorts.map(({ label, value }) => (
+				<button
+					class={`${btnBase} ${value === 'newest' ? btnActive : btnDefault}`}
+					data-sort={value}
+				>
+					{label}
+				</button>
+			))}
+		</div>
+	</div>
+
+	<!-- 記事リスト -->
+	<div id="posts-container" class="flex flex-col gap-3">
+		{allPosts.map((post) => (
+			<div class="post-item" data-source={post.type} data-date={post.pubDate.toISOString()}>
+				<PostCard post={post} />
+			</div>
+		))}
+	</div>
+
+	<p id="no-posts" class="hidden text-center text-sm text-gray-400 py-8">記事が見つかりませんでした</p>
 </BaseLayout>
+
+<script>
+	const ACTIVE = ['bg-sky-100', 'border-sky-400', 'text-sky-600'];
+	const DEFAULT = ['border-sky-200', 'text-gray-500'];
+
+	const allItems = [...document.querySelectorAll<HTMLElement>('.post-item')];
+	let currentFilter = 'all';
+	let currentSort = 'newest';
+
+	function setActive(group: NodeListOf<HTMLElement>, btn: HTMLElement) {
+		group.forEach((b) => {
+			b.classList.remove(...ACTIVE);
+			b.classList.add(...DEFAULT);
+		});
+		btn.classList.remove(...DEFAULT);
+		btn.classList.add(...ACTIVE);
+	}
+
+	function apply() {
+		const container = document.getElementById('posts-container')!;
+		const noPostsMsg = document.getElementById('no-posts')!;
+
+		const filtered = allItems.filter(
+			(item) => currentFilter === 'all' || item.dataset.source === currentFilter
+		);
+
+		filtered.sort((a, b) => {
+			const da = new Date(a.dataset.date!).valueOf();
+			const db = new Date(b.dataset.date!).valueOf();
+			return currentSort === 'newest' ? db - da : da - db;
+		});
+
+		allItems.forEach((item) => (item.hidden = true));
+		filtered.forEach((item) => {
+			item.hidden = false;
+			container.appendChild(item);
+		});
+
+		noPostsMsg.classList.toggle('hidden', filtered.length > 0);
+	}
+
+	const filterBtns = document.querySelectorAll<HTMLElement>('#filter-buttons button');
+	filterBtns.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			setActive(filterBtns, btn);
+			currentFilter = btn.dataset.filter!;
+			apply();
+		});
+	});
+
+	const sortBtns = document.querySelectorAll<HTMLElement>('#sort-buttons button');
+	sortBtns.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			setActive(sortBtns, btn);
+			currentSort = btn.dataset.sort!;
+			apply();
+		});
+	});
+</script>
