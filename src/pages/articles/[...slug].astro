@@ -1,27 +1,53 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BlogPost from '@/layouts/BlogPost.astro';
-import { getBlogPosts } from '@/lib/blog';
+import { getBlogPosts, getDevPosts } from '@/lib/blog';
 
 export async function getStaticPaths() {
 	const posts = await getBlogPosts();
-	return posts.map((post) => ({
+	const devPosts = await getDevPosts();
+
+	const blogPaths = posts.map((post) => ({
 		params: { slug: post.id },
-		props: { enriched: post },
+		props: { id: post.id, collection: 'blog' as const },
 	}));
+
+	const devPaths = devPosts.map((post) => ({
+		params: { slug: `dev/${post.id}` },
+		props: { id: post.id, collection: 'dev' as const },
+	}));
+
+	return [...blogPaths, ...devPaths];
 }
 
-const { enriched } = Astro.props;
-const collection = await getCollection('blog');
-const original = collection.find((p) => p.id === enriched.id)!;
-const { Content, headings } = await render(original);
+const { id, collection } = Astro.props;
+
+let entry;
+let pubDate: Date;
+
+if (collection === 'dev') {
+	const devCollection = await getCollection('dev');
+	entry = devCollection.find((p) => p.id === id)!;
+	pubDate = new Date();
+} else {
+	const blogCollection = await getCollection('blog');
+	const raw = blogCollection.find((p) => p.id === id)!;
+	entry = raw;
+	// getBlogPosts() で計算した pubDate を再計算
+	const match = id.match(/(\d{4})(\d{2})(\d{2})(\d{2})?/);
+	pubDate = match
+		? new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4] ?? '00'}:00:00`)
+		: new Date(0);
+}
+
+const { Content, headings } = await render(entry);
 ---
 
 <BlogPost
-	title={enriched.data.title}
-	pubDate={enriched.data.pubDate}
-	tags={enriched.data.tags}
-	updatedDate={enriched.data.updatedDate}
+	title={entry.data.title}
+	pubDate={pubDate}
+	tags={entry.data.tags}
+	updatedDate={'updatedDate' in entry.data ? entry.data.updatedDate : undefined}
 	headings={headings}
 >
 	<Content />

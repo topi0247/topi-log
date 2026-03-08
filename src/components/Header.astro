@@ -1,6 +1,8 @@
 ---
 import HeaderLink from '@/components/HeaderLink.astro';
 import { SITE_TITLE } from '@/consts';
+import { Image } from 'astro:assets';
+import logo from '@/assets/topi-log.png';
 ---
 
 <header
@@ -8,8 +10,8 @@ import { SITE_TITLE } from '@/consts';
 	class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-dashed border-sky-200 transition-transform duration-300"
 >
 	<nav class="max-w-[720px] mx-auto px-4 h-14 flex items-center justify-between">
-		<a href="/" class="font-bold text-gray-800 text-lg tracking-wide no-underline">
-			{SITE_TITLE}
+		<a href="/" class="no-underline">
+			<Image src={logo} alt={SITE_TITLE} height={32} class="h-8 w-auto" />
 		</a>
 		<div class="flex gap-6">
 			<HeaderLink href="/">Home</HeaderLink>

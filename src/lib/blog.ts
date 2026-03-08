@@ -1,4 +1,4 @@
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { getExternalPosts } from '@/lib/externalPosts';
 
 export type UnifiedPost = {
@@ -54,6 +54,14 @@ export async function getBlogPosts() {
 export async function getPinnedPost() {
 	const posts = await getBlogPosts();
 	return posts.find((post) => post.data.pinned === true) ?? null;
+}
+
+/**
+ * 開発環境専用記事を取得する（DEV時のみ）
+ */
+export async function getDevPosts(): Promise<CollectionEntry<'dev'>[]> {
+	if (!import.meta.env.DEV) return [];
+	return getCollection('dev');
 }
 
 /**

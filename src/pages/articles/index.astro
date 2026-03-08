@@ -2,9 +2,10 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
 import { SITE_TITLE } from '@/consts';
-import { getAllPosts } from '@/lib/blog';
+import { getAllPosts, getDevPosts } from '@/lib/blog';
 
 const allPosts = await getAllPosts();
+const devPosts = await getDevPosts();
 
 const filters = [
 	{ label: 'すべて', value: 'all' },
@@ -25,6 +26,20 @@ const btnActive = 'bg-sky-100 border-sky-400 text-sky-600';
 ---
 
 <BaseLayout title={`Articles | ${SITE_TITLE}`} description="記事一覧">
+	<!-- ローカル確認用（DEVのみ） -->
+	{devPosts.length > 0 && (
+		<div class="mb-6 p-4 border border-dashed border-amber-300 bg-amber-50">
+			<p class="text-xs font-medium text-amber-500 tracking-widest mb-2">DEV ONLY</p>
+			<div class="flex flex-col gap-1">
+				{devPosts.map((post) => (
+					<a href={`/articles/dev/${post.id}`} class="text-sm text-amber-600 hover:text-amber-800 no-underline transition-colors">
+						{post.data.title}
+					</a>
+				))}
+			</div>
+		</div>
+	)}
+
 	<!-- フィルター・ソートバー -->
 	<div class="flex flex-wrap items-center gap-2 mb-4">
 		<div class="flex flex-wrap gap-1.5" id="filter-buttons">
