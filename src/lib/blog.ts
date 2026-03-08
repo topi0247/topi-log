@@ -16,7 +16,7 @@ export type UnifiedPost = {
  * ファイル名（yyyymmddhh または yyyymmdd）から公開日時を生成する
  */
 function parsePubDateFromId(id: string): Date {
-	const match = id.match(/^(\d{4})(\d{2})(\d{2})(\d{2})?/);
+	const match = id.match(/(\d{4})(\d{2})(\d{2})(\d{2})?/);
 	if (!match) throw new Error(`ブログファイル名が不正です: ${id}`);
 	const [, yyyy, mm, dd, hh = '00'] = match;
 	return new Date(`${yyyy}-${mm}-${dd}T${hh}:00:00`);
@@ -36,7 +36,7 @@ function getExcerpt(body: string): string {
  * 公開済みブログ記事を取得する（draft除外・日付降順）
  */
 export async function getBlogPosts() {
-	const posts = await getCollection('blog', ({ id }) => !id.startsWith('draft'));
+	const posts = await getCollection('blog', ({ id }) => import.meta.env.DEV || !id.startsWith('draft'));
 	return posts
 		.map((post) => ({
 			...post,
