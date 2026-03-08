@@ -26,7 +26,7 @@ const isExternal = post.type !== 'internal';
 ---
 
 <div class="bg-white shadow-md p-5">
-	<div class="flex items-center justify-between mb-1">
+	<div class="flex items-center gap-2 mb-1">
 		<p class="text-xs text-gray-400"><FormattedDate date={post.pubDate} /></p>
 		<span class={`text-xs px-2 py-0.5 rounded-full ${SOURCE_COLOR[post.type]}`}>
 			{SOURCE_LABEL[post.type]}

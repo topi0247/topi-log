@@ -8,8 +8,12 @@ export type ExternalPost = {
 
 function extractTag(xml: string, tag: string): string {
 	const escaped = tag.replace(':', '\\:');
-	const m = xml.match(new RegExp(`<${escaped}(?:\\s[^>]*)?>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${escaped}>`, 'i'));
-	return m?.[1]?.trim() ?? '';
+	const m = xml.match(new RegExp(`<${escaped}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${escaped}>`, 'i'));
+	if (!m) return '';
+	const content = m[1].trim();
+	// CDATA セクションがあれば中身だけ取り出す
+	const cdata = content.match(/^<!\[CDATA\[([\s\S]*?)\]\]>$/);
+	return (cdata ? cdata[1] : content).trim();
 }
 
 function parseRssItems(xml: string): { title: string; link: string; pubDate: string; description: string }[] {
@@ -32,6 +36,15 @@ function parseRssItems(xml: string): { title: string; link: string; pubDate: str
 
 function stripHtml(html: string): string {
 	return html
+		// エンティティエンコードされたHTMLタグをデコードしてから除去
+		.replace(/&lt;/g, '<')
+		.replace(/&gt;/g, '>')
+		.replace(/&amp;/g, '&')
+		.replace(/&quot;/g, '"')
+		// 16進数・10進数の数値文字参照をデコード（日本語文字など）
+		.replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+		.replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+		// HTMLタグを除去
 		.replace(/<[^>]+>/g, ' ')
 		.replace(/&nbsp;/g, ' ')
 		.replace(/&[a-z]+;/gi, '')
